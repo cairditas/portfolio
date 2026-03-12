@@ -66,6 +66,20 @@ jobs:
       - name: Generate coverage report
         run: npm run test:coverage
 
+      - name: Debug coverage files
+        if: always()
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Contents of current directory:"
+          ls -la
+          echo ""
+          echo "Coverage directory:"
+          ls -la coverage/ || echo "Coverage directory not found"
+          echo ""
+          echo "Looking for coverage-summary.json:"
+          find . -name "coverage-summary.json" -type f || echo "coverage-summary.json not found"
+
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
         if: always()
