@@ -1,0 +1,45 @@
+# Erlang/BEAM
+*.beam
+*.ez
+/build
+erl_crash.dump
+
+# Gleam specific
+*.gleam~
+gleam.lock
+/build/dev/
+/build/prod/
+/dist/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output/
+
+# SonarQube
+.sonar/
+sonar-report/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

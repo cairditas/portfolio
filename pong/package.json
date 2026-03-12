@@ -1,0 +1,44 @@
+{
+  "name": "pong-gleam",
+  "version": "1.0.0",
+  "description": "Gleam Pong game with JavaScript testing and SonarQube integration",
+  "type": "module",
+  "scripts": {
+    "build": "gleam build --target javascript && cp canvas_ffi.mjs build/dev/javascript/pong/",
+    "test": "npm run build && gleam test --target javascript",
+    "test:ffi": "npm run build && node --test test/canvas_ffi.test.mjs",
+    "test:coverage": "npm run build && c8 --reporter=text --reporter=json-summary sh -c 'gleam test --target javascript && node --test test/canvas_ffi.test.mjs'",
+    "sonar:local": "sonar-scanner",
+    "clean": "rm -rf build coverage .sonar"
+  },
+  "devDependencies": {
+    "c8": "^8.0.1",
+    "sonar-scanner": "^3.1.0"
+  },
+  "c8": {
+    "lines": 90,
+    "branches": 80,
+    "functions": 90,
+    "statements": 90,
+    "checkCoverage": false,
+    "reporter": [
+      "text",
+      "lcov",
+      "html",
+      "json-summary"
+    ],
+    "exclude": [
+      "build/**/test/**",
+      "build/**/gleeunit/**",
+      "build/**/gleam_stdlib/**",
+      "node_modules/**",
+      "coverage/**"
+    ],
+    "include": [
+      "build/dev/javascript/pong/**/*.mjs"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
