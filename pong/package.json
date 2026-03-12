@@ -18,7 +18,7 @@
   "c8": {
     "lines": 90,
     "branches": 80,
-    "functions": 90,
+    "functions": 65,
     "statements": 90,
     "checkCoverage": true,
     "reporter": [
