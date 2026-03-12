@@ -85,5 +85,5 @@ jobs:
         if: always()
         with:
           name: coverage-reports
-          path: coverage/coverage-summary.json
+          path: ./coverage/coverage-summary.json
           retention-days: 1
