@@ -20,7 +20,7 @@
     "branches": 80,
     "functions": 90,
     "statements": 90,
-    "checkCoverage": false,
+    "checkCoverage": true,
     "reporter": [
       "text",
       "lcov",
