@@ -71,7 +71,7 @@ jobs:
         if: always()
         with:
           name: coverage-reports
-          path: coverage/
+          path: coverage/coverage-summary.json
           retention-days: 1
 
       - name: Check coverage thresholds
