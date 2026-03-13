@@ -6,16 +6,21 @@ and test data ranges. Eliminates magic numbers and makes tests easier to maintai
 """
 
 import os
+import sys
 from typing import List, Tuple
 
-# Game area constants (from main game)
-GAME_AREA_X = 50
-GAME_AREA_Y = 100
-GAME_AREA_WIDTH = 700
-GAME_AREA_HEIGHT = 400
-PADDLE_WIDTH = 10
+# Add the src directory to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+
+from pong.core.config import config
+
+# Game area constants (from current configuration)
+GAME_AREA_X = config.game_area.x
+GAME_AREA_Y = config.game_area.y
+GAME_AREA_WIDTH = config.game_area.width
+GAME_AREA_HEIGHT = config.game_area.height
+BALL_SIZE = config.ball.size
 PADDLE_HEIGHT = 60
-BALL_SIZE = 10
 
 # Performance benchmarks
 class PerformanceBenchmarks:

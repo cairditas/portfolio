@@ -5,6 +5,7 @@ Handles AI opponent logic and decision making.
 Separates AI concerns from game objects.
 """
 
+import random
 from typing import Tuple
 from pong.core.config import config
 
@@ -12,20 +13,19 @@ from pong.core.config import config
 class AIController:
     """Controls AI paddle movement and decision making."""
     
-    def __init__(self, ai_config=None):
+    def __init__(self):
         """Initialize AI controller with configuration."""
-        self.config = ai_config or config.ai
+        self.config = config.ai
     
-    def calculate_target_position(self, ball_y: int, ball_velocity_y: float, 
-                                paddle_center_y: int, make_mistake: bool = False) -> int:
+    def calculate_target_position(self, ball_y: int, ball_velocity_y: int, paddle_center_y: int, make_mistake: bool) -> int:
         """
-        Calculate the target Y position for the AI paddle.
+        Calculate the target Y position for the paddle.
         
         Args:
-            ball_y: Current Y position of the ball
-            ball_velocity_y: Current Y velocity of the ball
-            paddle_center_y: Current Y position of the paddle center
-            make_mistake: If True, AI will intentionally move away from ball
+            ball_y: Current ball Y position
+            ball_velocity_y: Current ball Y velocity
+            paddle_center_y: Current paddle center Y position
+            make_mistake: Whether the AI should make a mistake
         
         Returns:
             Target Y position for the paddle
@@ -33,7 +33,8 @@ class AIController:
         if make_mistake:
             # Intentionally move away from the ball
             mistake_direction = 1 if ball_y < paddle_center_y else -1
-            return ball_y + (self.config.mistake_distance * mistake_direction)
+            # Move away from current paddle position, not from ball
+            return paddle_center_y + (self.config.mistake_distance * mistake_direction)
         else:
             # Track ball with prediction based on velocity
             prediction = ball_velocity_y * self.config.prediction_factor
@@ -74,7 +75,6 @@ class AIController:
         Returns:
             True if AI should make a mistake
         """
-        import random
         return random.random() < self.config.error_chance
     
     def get_movement_direction(self, movement_amount: int) -> str:
@@ -94,29 +94,12 @@ class AIController:
         return 'none'
 
 
-class AIStrategy:
-    """Base class for AI strategies."""
-    
-    def calculate_move(self, ball_y: int, ball_velocity_y: int, paddle_center_y: int) -> Tuple[int, bool]:
-        """
-        Calculate AI movement.
-        
-        Args:
-            ball_y: Current ball Y position
-            ball_velocity_y: Current ball Y velocity
-            paddle_center_y: Current paddle center Y position
-        
-        Returns:
-            Tuple of (movement_amount, should_make_mistake)
-        """
-        raise NotImplementedError
-
-
-class BasicAIStrategy(AIStrategy):
+class BasicAIStrategy:
     """Basic AI strategy with simple tracking."""
     
-    def __init__(self, ai_config=None):
-        self.controller = AIController(ai_config)
+    def __init__(self):
+        self.controller = AIController()
+        self.paddle_speed = config.paddle.y_amount
     
     def calculate_move(self, ball_y: int, ball_velocity_y: int, paddle_center_y: int) -> Tuple[int, bool]:
         """Calculate basic AI movement."""
@@ -129,18 +112,19 @@ class BasicAIStrategy(AIStrategy):
             return 0, False
         
         movement_amount = self.controller.calculate_movement_amount(
-            paddle_center_y, target_y, 7  # Default paddle speed
+            paddle_center_y, target_y, self.paddle_speed
         )
         
         return movement_amount, make_mistake
 
 
-class SmartAIStrategy(AIStrategy):
-    """Advanced AI strategy with better prediction."""
+class SmartAIStrategy:
+    """AI strategy with prediction."""
     
-    def __init__(self, ai_config=None):
-        self.controller = AIController(ai_config)
+    def __init__(self):
+        self.controller = AIController()
         self.prediction_history = []
+        self.paddle_speed = config.paddle.y_amount
     
     def calculate_move(self, ball_y: int, ball_velocity_y: int, paddle_center_y: int) -> Tuple[int, bool]:
         """Calculate smart AI movement with improved prediction."""
@@ -161,7 +145,7 @@ class SmartAIStrategy(AIStrategy):
             return 0, False
         
         movement_amount = self.controller.calculate_movement_amount(
-            paddle_center_y, target_y, 7  # Default paddle speed
+            paddle_center_y, target_y, self.paddle_speed
         )
         
         return movement_amount, make_mistake

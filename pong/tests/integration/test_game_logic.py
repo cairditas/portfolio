@@ -24,14 +24,14 @@ class TestPongGame(unittest.TestCase):
     def test_game_initialization_comprehensive(self):
         """Test comprehensive game initialization."""
         self.assertIsInstance(self.game, PongGame)
-        self.assertEqual(self.game.player_score, 0)
-        self.assertEqual(self.game.computer_score, 0)
-        self.assertEqual(self.game.losses, 0)
-        self.assertEqual(self.game.level, 1)
-        self.assertEqual(self.game.high_score, 0)
-        self.assertFalse(self.game.game_over)
-        self.assertFalse(self.game.countdown_active)
-        self.assertFalse(self.game.show_continue_prompt)
+        self.assertEqual(self.game.game_state.player_score, 0)
+        self.assertEqual(self.game.game_state.computer_score, 0)
+        self.assertEqual(self.game.game_state.losses, 0)
+        self.assertEqual(self.game.game_state.level, 1)
+        self.assertEqual(self.game.game_state.high_score, 0)
+        self.assertFalse(self.game.game_state.game_over)
+        self.assertFalse(self.game.game_state.countdown_active)
+        self.assertFalse(self.game.game_state.show_continue_prompt)
     
     def test_paddle_initial_positions(self):
         """Test paddles start at correct positions."""
@@ -45,7 +45,7 @@ class TestPongGame(unittest.TestCase):
         
         for paddle_name, expected_x, expected_color in paddle_tests:
             with self.subTest(paddle=paddle_name):
-                paddle = getattr(self.game, paddle_name)
+                paddle = self.game.game_objects[paddle_name]
                 self.assertEqual(paddle.rect.x, expected_x)
                 self.assertEqual(paddle.color, expected_color)
                 # Should be vertically centered
@@ -59,7 +59,7 @@ class TestPongGame(unittest.TestCase):
             with self.subTest(position=ball_pos):
                 game = TestDataFactory.create_game()
                 
-                game.ball.rect.x, game.ball.rect.y = ball_pos
+                game.game_objects['ball'].rect.x, game.game_objects['ball'].rect.y = ball_pos
                 result = game.handle_scoring()
                 
                 self.assertTrue(result)
@@ -70,7 +70,7 @@ class TestPongGame(unittest.TestCase):
             with self.subTest(position=ball_pos):
                 game = TestDataFactory.create_game()
                 
-                game.ball.rect.x, game.ball.rect.y = ball_pos
+                game.game_objects['ball'].rect.x, game.game_objects['ball'].rect.y = ball_pos
                 result = game.handle_scoring()
                 
                 self.assertTrue(result)
@@ -82,50 +82,50 @@ class TestPongGame(unittest.TestCase):
         game_area = self.constants['game_area']
         
         # Set up game over scenario
-        self.game.losses = max_losses - 1
-        self.game.ball.rect.right = game_area['x'] - 1
+        self.game.game_state.losses = max_losses - 1
+        self.game.game_objects['ball'].rect.right = game_area['x'] - 1
         
         # Trigger final loss
         self.game.handle_scoring()
         
-        self.assertTrue(self.game.game_over)
-        self.assertEqual(self.game.losses, max_losses)
+        self.assertTrue(self.game.game_state.game_over)
+        self.assertEqual(self.game.game_state.losses, max_losses)
     
     def test_high_score_tracking(self):
         """Test high score is tracked correctly."""
         # Player scores multiple times
         for i in range(3):
             game_area = self.constants['game_area']
-            self.game.ball.rect.left = game_area['x'] + game_area['width'] + 1
+            self.game.game_objects['ball'].rect.left = game_area['x'] + game_area['width'] + 1
             self.game.handle_scoring()
             
             expected_high_score = i + 1
-            self.assertEqual(self.game.high_score, expected_high_score)
+            self.assertEqual(self.game.game_state.high_score, expected_high_score)
     
     def test_paddle_collision_detection(self):
         """Test paddle collision detection works."""
         # Test player paddle collision
-        initial_velocity_x = self.game.ball.velocity_x
+        initial_velocity_x = self.game.game_objects['ball'].velocity_x
         
         # Position ball for collision with player paddle
-        self.game.ball.rect.centerx = self.game.player_paddle.rect.centerx
-        self.game.ball.rect.centery = self.game.player_paddle.rect.centery
-        self.game.ball.velocity_x = -5  # Moving towards player paddle
+        self.game.game_objects['ball'].rect.centerx = self.game.game_objects['player_paddle'].rect.centerx
+        self.game.game_objects['ball'].rect.centery = self.game.game_objects['player_paddle'].rect.centery
+        self.game.game_objects['ball'].velocity_x = -5  # Moving towards player paddle
         
         self.game.handle_paddle_collision()
         
         # Velocity should have reversed
-        self.assertEqual(self.game.ball.velocity_x, 5)
+        self.assertEqual(self.game.game_objects['ball'].velocity_x, 5)
         
         # Test computer paddle collision
-        self.game.ball.rect.centerx = self.game.computer_paddle.rect.centerx
-        self.game.ball.rect.centery = self.game.computer_paddle.rect.centery
-        self.game.ball.velocity_x = 5  # Moving towards computer paddle
+        self.game.game_objects['ball'].rect.centerx = self.game.game_objects['computer_paddle'].rect.centerx
+        self.game.game_objects['ball'].rect.centery = self.game.game_objects['computer_paddle'].rect.centery
+        self.game.game_objects['ball'].velocity_x = 5  # Moving towards computer paddle
         
         self.game.handle_paddle_collision()
         
         # Velocity should have reversed again
-        self.assertEqual(self.game.ball.velocity_x, -5)
+        self.assertEqual(self.game.game_objects['ball'].velocity_x, -5)
 
 
 if __name__ == '__main__':

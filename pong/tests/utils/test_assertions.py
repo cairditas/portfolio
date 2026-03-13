@@ -13,8 +13,15 @@ from typing import Tuple, Optional
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from pong.game import GAME_AREA_X, GAME_AREA_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT, BALL_SIZE
+from pong.core.config import config
 from tests.fixtures.test_config import TestTolerances
+
+# Get constants for test convenience
+GAME_AREA_X = config.game_area.x
+GAME_AREA_Y = config.game_area.y
+GAME_AREA_WIDTH = config.game_area.width
+GAME_AREA_HEIGHT = config.game_area.height
+BALL_SIZE = config.ball.size
 
 
 class GameAssertions:
@@ -183,17 +190,17 @@ class GameAssertions:
         """
         errors = []
         
-        if game.player_score != expected_player_score:
-            errors.append(f"Player score: expected {expected_player_score}, got {game.player_score}")
+        if game.game_state.player_score != expected_player_score:
+            errors.append(f"Player score: expected {expected_player_score}, got {game.game_state.player_score}")
         
-        if game.computer_score != expected_computer_score:
-            errors.append(f"Computer score: expected {expected_computer_score}, got {game.computer_score}")
+        if game.game_state.computer_score != expected_computer_score:
+            errors.append(f"Computer score: expected {expected_computer_score}, got {game.game_state.computer_score}")
         
-        if game.losses != expected_losses:
-            errors.append(f"Losses: expected {expected_losses}, got {game.losses}")
+        if game.game_state.losses != expected_losses:
+            errors.append(f"Losses: expected {expected_losses}, got {game.game_state.losses}")
         
-        if game.level != expected_level:
-            errors.append(f"Level: expected {expected_level}, got {game.level}")
+        if game.game_state.level != expected_level:
+            errors.append(f"Level: expected {expected_level}, got {game.game_state.level}")
         
         if errors:
             raise AssertionError("Score assertion failed: " + "; ".join(errors))

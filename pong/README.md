@@ -73,15 +73,14 @@ pong/
 
 ## Configuration
 
-The game can be configured by modifying constants in `src/pong/game.py`:
+The game can be configured by modifying constants in `src/pong/core/config.py`:
 
-- `WINDOW_WIDTH`, `WINDOW_HEIGHT`: Overall window size
-- `GAME_AREA_WIDTH`, `GAME_AREA_HEIGHT`: Game playing area size
-- `PADDLE_SPEED`: Paddle movement speed
-- `INITIAL_BALL_SPEED`: Starting ball speed
-- `SPEED_INCREMENT`: Speed increase per level
-- `MAX_LOSSES`: Number of losses before game over
-- `COMPUTER_ERROR_CHANCE`: Probability of computer making a mistake
+- `WindowConfig`: Window dimensions and FPS settings
+- `GameAreaConfig`: Game playing area size and position  
+- `PaddleConfig`: Paddle dimensions and movement speed
+- `BallConfig`: Ball size, speed, and physics parameters
+- `AIConfig`: Computer opponent difficulty settings
+- `GameRulesConfig`: Scoring and game rules
 
 ## Technologies Used
 

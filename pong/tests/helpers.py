@@ -11,13 +11,8 @@ import os
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from pong.game import (
-    WINDOW_WIDTH, WINDOW_HEIGHT, GAME_AREA_WIDTH, GAME_AREA_HEIGHT,
-    GAME_AREA_X, GAME_AREA_Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED,
-    BALL_SIZE, INITIAL_BALL_SPEED, SPEED_INCREMENT, MAX_LOSSES,
-    COMPUTER_ERROR_CHANCE, Colors
-)
-
+from pong.core.config import config
+from pong.core.config import Colors
 
 def get_all_game_constants():
     """
@@ -28,30 +23,30 @@ def get_all_game_constants():
     """
     return {
         'window': {
-            'width': WINDOW_WIDTH,
-            'height': WINDOW_HEIGHT
+            'width': config.window.width,
+            'height': config.window.height
         },
         'game_area': {
-            'x': GAME_AREA_X,
-            'y': GAME_AREA_Y,
-            'width': GAME_AREA_WIDTH,
-            'height': GAME_AREA_HEIGHT
+            'x': config.game_area.x,
+            'y': config.game_area.y,
+            'width': config.game_area.width,
+            'height': config.game_area.height
         },
         'paddle': {
-            'width': PADDLE_WIDTH,
-            'height': PADDLE_HEIGHT,
-            'speed': PADDLE_SPEED
+            'width': config.paddle.width,
+            'height': config.paddle.height,
+            'speed': config.paddle.y_amount
         },
         'ball': {
-            'size': BALL_SIZE,
-            'initial_speed': INITIAL_BALL_SPEED,
-            'speed_increment': SPEED_INCREMENT
+            'size': config.ball.size,
+            'initial_speed': config.ball.initial_speed,
+            'speed_increment': config.ball.speed_increment
         },
         'rules': {
-            'max_losses': MAX_LOSSES
+            'max_losses': config.rules.max_losses
         },
         'ai': {
-            'error_chance': COMPUTER_ERROR_CHANCE
+            'error_chance': config.ai.error_chance
         },
         'colors': {
             'black': Colors.BLACK,
@@ -62,6 +57,22 @@ def get_all_game_constants():
             'gray': Colors.GRAY
         }
     }
+
+# Export individual constants for test convenience
+WINDOW_WIDTH = config.window.width
+WINDOW_HEIGHT = config.window.height
+GAME_AREA_WIDTH = config.game_area.width
+GAME_AREA_HEIGHT = config.game_area.height
+GAME_AREA_X = config.game_area.x
+GAME_AREA_Y = config.game_area.y
+PADDLE_WIDTH = config.paddle.width
+PADDLE_HEIGHT = config.paddle.height
+PADDLE_SPEED = config.paddle.y_amount
+BALL_SIZE = config.ball.size
+INITIAL_BALL_SPEED = config.ball.initial_speed
+SPEED_INCREMENT = config.ball.speed_increment
+MAX_LOSSES = config.rules.max_losses
+COMPUTER_ERROR_CHANCE = config.ai.error_chance
 
 
 def validate_constant_value(value, name, expected_type, min_value=None, max_value=None):

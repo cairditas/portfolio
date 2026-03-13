@@ -27,7 +27,7 @@ class TestPaddle(unittest.TestCase):
         self.assertEqual(self.paddle.rect.x, 100)
         self.assertEqual(self.paddle.rect.y, 200)
         self.assertEqual(self.paddle.color, self.constants['colors']['blue'])
-        self.assertEqual(self.paddle.speed, self.constants['paddle']['speed'])
+        self.assertEqual(self.paddle.y_amount, self.constants['paddle']['speed'])
     
     def test_paddle_movement(self):
         """Test paddle movement methods."""

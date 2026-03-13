@@ -13,12 +13,20 @@ import os
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from pong.game import (
-    Paddle, Ball, PongGame, Colors,
-    GAME_AREA_X, GAME_AREA_Y, GAME_AREA_WIDTH, GAME_AREA_HEIGHT, 
-    PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_SPEED,
-    BALL_SIZE, INITIAL_BALL_SPEED, MAX_LOSSES
-)
+from pong.game import Paddle, Ball, PongGame
+from pong.core.config import config, Colors
+
+# Get constants for test convenience
+GAME_AREA_X = config.game_area.x
+GAME_AREA_Y = config.game_area.y
+GAME_AREA_WIDTH = config.game_area.width
+GAME_AREA_HEIGHT = config.game_area.height
+PADDLE_WIDTH = config.paddle.width
+PADDLE_HEIGHT = config.paddle.height
+PADDLE_SPEED = config.paddle.y_amount
+BALL_SIZE = config.ball.size
+INITIAL_BALL_SPEED = config.ball.initial_speed
+MAX_LOSSES = config.rules.max_losses
 from tests.fixtures.test_config import TestDataRanges, ScoringScenarios, IntegrationScenarios
 
 
@@ -29,7 +37,7 @@ class PaddleBuilder:
         self.x = GAME_AREA_X + 20
         self.y = GAME_AREA_Y + GAME_AREA_HEIGHT // 2 - PADDLE_HEIGHT // 2
         self.color = Colors.BLUE
-        self.speed = PADDLE_SPEED
+        self.y_amount = PADDLE_SPEED
     
     def with_position(self, x: int, y: int) -> 'PaddleBuilder':
         """Set paddle position."""
@@ -70,7 +78,7 @@ class PaddleBuilder:
     def build(self) -> Paddle:
         """Build the paddle."""
         paddle = Paddle(self.x, self.y, self.color)
-        paddle.speed = self.speed
+        paddle.y_amount = self.y_amount
         return paddle
 
 
@@ -243,23 +251,23 @@ class GameStateBuilder:
     
     def build(self, game: PongGame) -> PongGame:
         """Apply the built state to a game object."""
-        game.player_score = self.player_score
-        game.computer_score = self.computer_score
-        game.losses = self.losses
-        game.level = self.level
-        game.high_score = self.high_score
-        game.game_over = self.game_over
-        game.countdown_active = self.countdown_active
-        game.show_continue_prompt = self.show_continue_prompt
+        game.game_state.player_score = self.player_score
+        game.game_state.computer_score = self.computer_score
+        game.game_state.losses = self.losses
+        game.game_state.level = self.level
+        game.game_state.high_score = self.high_score
+        game.game_state.game_over = self.game_over
+        game.game_state.countdown_active = self.countdown_active
+        game.game_state.show_continue_prompt = self.show_continue_prompt
         
         if self.ball_position:
-            game.ball.rect.x, game.ball.rect.y = self.ball_position
+            game.game_objects['ball'].rect.x, game.game_objects['ball'].rect.y = self.ball_position
         
         if self.ball_velocity:
-            game.ball.velocity_x, game.ball.velocity_y = self.ball_velocity
+            game.game_objects['ball'].velocity_x, game.game_objects['ball'].velocity_y = self.ball_velocity
         
         for paddle_type, position in self.paddle_positions.items():
-            paddle = getattr(game, f"{paddle_type}_paddle")
+            paddle = game.game_objects[f"{paddle_type}_paddle"]
             paddle.rect.x, paddle.rect.y = position
         
         return game
@@ -323,24 +331,24 @@ class GameScenarioBuilder:
         
         for action, data in self.actions:
             if action == 'player_score':
-                self.game.ball.rect.left = GAME_AREA_X + GAME_AREA_WIDTH + 1
+                self.game.game_objects['ball'].rect.left = GAME_AREA_X + GAME_AREA_WIDTH + 1
                 self.game.handle_scoring()
             
             elif action == 'computer_score':
-                self.game.ball.rect.right = GAME_AREA_X - 1
+                self.game.game_objects['ball'].rect.right = GAME_AREA_X - 1
                 self.game.handle_scoring()
             
             elif action == 'move_ball':
                 x, y = data
-                self.game.ball.rect.x, self.game.ball.rect.y = x, y
+                self.game.game_objects['ball'].rect.x, self.game.game_objects['ball'].rect.y = x, y
             
             elif action == 'set_velocity':
                 vx, vy = data
-                self.game.ball.velocity_x, self.game.ball.velocity_y = vx, vy
+                self.game.game_objects['ball'].velocity_x, self.game.game_objects['ball'].velocity_y = vx, vy
             
             elif action == 'move_paddle':
                 paddle_type, direction = data
-                paddle = getattr(self.game, f"{paddle_type}_paddle")
+                paddle = self.game.game_objects[f"{paddle_type}_paddle"]
                 if direction == 'up':
                     paddle.move_up()
                 elif direction == 'down':
@@ -348,9 +356,9 @@ class GameScenarioBuilder:
             
             elif action == 'collision':
                 paddle_type = data
-                paddle = getattr(self.game, f"{paddle_type}_paddle")
-                self.game.ball.rect.centerx = paddle.rect.centerx
-                self.game.ball.rect.centery = paddle.rect.centery
+                paddle = self.game.game_objects[f"{paddle_type}_paddle"]
+                self.game.game_objects['ball'].rect.centerx = paddle.rect.centerx
+                self.game.game_objects['ball'].rect.centery = paddle.rect.centery
                 self.game.handle_paddle_collision()
             
             elif action == 'reset':

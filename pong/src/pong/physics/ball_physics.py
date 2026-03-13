@@ -51,5 +51,4 @@ class BallPhysics:
         Returns:
             New Y velocity with spin
         """
-        import random
         return ball_velocity_y + random.uniform(-spin_amount, spin_amount)

@@ -55,14 +55,14 @@ class TestCompleteGameScenarios(unittest.TestCase):
                 # Set up boundary scenario
                 from tests.fixtures.test_config import TestDataRanges
                 position = TestDataRanges.BOUNDARY_POSITIONS[scenario['position']]
-                game.ball.rect.x, game.ball.rect.y = position
-                game.ball.velocity_x, game.ball.velocity_y = scenario['velocity']
+                game.game_objects['ball'].rect.x, game.game_objects['ball'].rect.y = position
+                game.game_objects['ball'].velocity_x, game.game_objects['ball'].velocity_y = scenario['velocity']
                 
                 # Move ball to trigger collision
-                game.ball.move()
+                game.game_objects['ball'].move()
                 
                 IntegrationAssertions.assert_boundary_collision_scenario(
-                    game.ball, scenario['expected_bounce'], scenario['velocity']
+                    game.game_objects['ball'], scenario['expected_bounce'], scenario['velocity']
                 )
     
     def test_game_loop_performance(self):
@@ -76,13 +76,21 @@ class TestCompleteGameScenarios(unittest.TestCase):
         
         for _ in range(10):
             # Simulate game loop operations
-            game.player_paddle.move_up()
-            game.player_paddle.move_down()
-            game.computer_paddle.ai_move(200, 0, False)
-            game.ball.move()
+            game.game_objects['player_paddle'].move_up()
+            game.game_objects['player_paddle'].move_down()
+            game.game_objects['computer_paddle'].ai_move(200, 0, False)
+            game.game_objects['ball'].move()
             game.handle_paddle_collision()
         
         end_time = time.time()
+        
+        # Run multiple game operations
+        for _ in range(50):
+            game = TestDataFactory.create_game()
+            game.game_objects['ball'].move()
+            game.handle_paddle_collision()
+            del game
+        
         loop_time = end_time - start_time
         
         PerformanceAssertions.assert_within_time_limit(
@@ -100,7 +108,7 @@ class TestCompleteGameScenarios(unittest.TestCase):
         # Run multiple game operations
         for _ in range(50):
             game = TestDataFactory.create_game()
-            game.ball.move()
+            game.game_objects['ball'].move()
             game.handle_paddle_collision()
             del game
         

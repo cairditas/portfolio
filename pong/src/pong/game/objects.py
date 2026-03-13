@@ -5,9 +5,10 @@ Contains all game objects with clean separation of concerns.
 """
 
 import pygame
-from typing import Optional
+import math
 from pong.core.config import config
 from pong.physics import MovementController, BallPhysics, BoundaryChecker
+from pong.physics.vectors import adjust_speed_to_target, calculate_speed_from_velocity
 from pong.ai import AIController
 
 
@@ -17,6 +18,9 @@ class Paddle:
     
     Separates movement logic from boundary checking and rendering.
     """
+    
+    # Movement constants
+    X_IS_ZERO = 0
     
     def __init__(self, x: int, y: int, color: tuple, paddle_config=None):
         """
@@ -31,21 +35,27 @@ class Paddle:
         self.config = paddle_config or config.paddle
         self.rect = pygame.Rect(x, y, self.config.width, self.config.height)
         self.color = color
-        self.speed = self.config.speed
+        self.y_amount = self.config.y_amount
     
     def move_up(self) -> None:
         """Move paddle up with boundary protection."""
         MovementController.move_with_boundary_protection(
-            self.rect, 0, -self.speed, config.game_area
+            self.rect, 
+            self.X_IS_ZERO,
+            -self.y_amount, 
+            config.game_area
         )
     
     def move_down(self) -> None:
         """Move paddle down with boundary protection."""
         MovementController.move_with_boundary_protection(
-            self.rect, 0, self.speed, config.game_area
+            self.rect, 
+            self.X_IS_ZERO,
+            self.y_amount, 
+            config.game_area
         )
     
-    def move_up_by_amount(self, amount: float) -> None:
+    def move_up_by_amount(self, y_amount: float) -> None:
         """
         Move paddle up by a specific amount with boundary protection.
         
@@ -53,18 +63,24 @@ class Paddle:
             amount: Distance to move up in pixels
         """
         MovementController.move_with_boundary_protection(
-            self.rect, 0, -amount, config.game_area
+            self.rect, 
+            self.X_IS_ZERO,
+            -y_amount, 
+            config.game_area
         )
     
-    def move_down_by_amount(self, amount: float) -> None:
+    def move_down_by_amount(self, y_amount: float) -> None:
         """
         Move paddle down by a specific amount with boundary protection.
         
         Args:
-            amount: Distance to move down in pixels
+            y_amount: Distance to move down in pixels
         """
         MovementController.move_with_boundary_protection(
-            self.rect, 0, amount, config.game_area
+            self.rect, 
+            self.X_IS_ZERO,
+            y_amount, 
+            config.game_area
         )
     
     def ai_move(self, ball_y: int, ball_velocity_y: float, make_mistake: bool = False) -> None:
@@ -76,14 +92,14 @@ class Paddle:
             ball_velocity_y: Current Y velocity of the ball
             make_mistake: If True, AI will intentionally move away from ball
         """
-        controller = AIController(config.ai)
+        controller = AIController()
         target_y = controller.calculate_target_position(
             ball_y, ball_velocity_y, self.rect.centery, make_mistake
         )
         
         if not MovementController.is_within_threshold(self.rect.centery, target_y, controller.config.movement_threshold):
             movement_amount = MovementController.calculate_movement_distance(
-                self.rect.centery, target_y, self.speed
+                self.rect.centery, target_y, self.y_amount
             )
             
             if movement_amount > 0:
@@ -149,7 +165,6 @@ class Ball:
         self.base_speed += self.config.speed_increment
         
         # Update current velocity to match new speed while preserving direction
-        from ..physics.vectors import adjust_speed_to_target
         self.velocity_x, self.velocity_y = adjust_speed_to_target(
             self.velocity_x, self.velocity_y, self.base_speed
         )
@@ -161,13 +176,11 @@ class Ball:
     @property
     def speed(self) -> float:
         """Get current speed magnitude."""
-        from ..physics.vectors import calculate_speed_from_velocity
         return calculate_speed_from_velocity(self.velocity_x, self.velocity_y)
     
     @property
     def angle(self) -> float:
         """Get current movement angle in degrees."""
-        import math
         return math.degrees(math.atan2(self.velocity_y, self.velocity_x))
 
 

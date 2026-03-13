@@ -1,19 +1,8 @@
 """
 Main Pong Game Implementation
-
-Refactored version with clean separation of concerns, following DRY principles
-and software engineering best practices.
-
-Architecture:
-- core/: Centralized configuration management
-- physics/: Physics calculations and movement logic
-- ai/: AI opponent logic and strategies
-- game/: Game objects and main orchestration
-- ui/: User interface rendering and input handling
 """
 
 import pygame
-from typing import Dict, Optional, Tuple
 from pong.core.config import config
 from pong.ui import GameRenderer, InputHandler
 from pong.ai import BasicAIStrategy
@@ -24,9 +13,6 @@ from .objects import Paddle, Ball, GameState
 class PongGame:
     """
     Main game class that orchestrates all game components.
-    
-    Follows separation of concerns by delegating specific responsibilities
-    to specialized classes.
     """
     
     def __init__(self):
@@ -50,103 +36,6 @@ class PongGame:
         # Game control flags
         self.running = True
         self.paused = False
-    
-    # Properties for backward compatibility with tests
-    @property
-    def player_paddle(self):
-        """Get player paddle object."""
-        return self.game_objects['player_paddle']
-    
-    @property
-    def computer_paddle(self):
-        """Get computer paddle object."""
-        return self.game_objects['computer_paddle']
-    
-    @property
-    def ball(self):
-        """Get ball object."""
-        return self.game_objects['ball']
-    
-    @property
-    def player_score(self):
-        """Get player score."""
-        return self.game_state.player_score
-    
-    @property
-    def computer_score(self):
-        """Get computer score."""
-        return self.game_state.computer_score
-    
-    @property
-    def losses(self):
-        """Get losses count."""
-        return self.game_state.losses
-    
-    @property
-    def level(self):
-        """Get current level."""
-        return self.game_state.level
-    
-    @property
-    def high_score(self):
-        """Get high score."""
-        return self.game_state.high_score
-    
-    @property
-    def game_over(self):
-        """Get game over state."""
-        return self.game_state.game_over
-    
-    @property
-    def countdown_active(self):
-        """Get countdown active state."""
-        return self.game_state.countdown_active
-    
-    @property
-    def show_continue_prompt(self):
-        """Get show continue prompt state."""
-        return self.game_state.show_continue_prompt
-    
-    # Setters for backward compatibility
-    @losses.setter
-    def losses(self, value):
-        """Set losses count."""
-        self.game_state.losses = value
-    
-    @player_score.setter
-    def player_score(self, value):
-        """Set player score."""
-        self.game_state.player_score = value
-    
-    @computer_score.setter
-    def computer_score(self, value):
-        """Set computer score."""
-        self.game_state.computer_score = value
-    
-    @level.setter
-    def level(self, value):
-        """Set current level."""
-        self.game_state.level = value
-    
-    @high_score.setter
-    def high_score(self, value):
-        """Set high score."""
-        self.game_state.high_score = value
-    
-    @game_over.setter
-    def game_over(self, value):
-        """Set game over state."""
-        self.game_state.game_over = value
-    
-    @countdown_active.setter
-    def countdown_active(self, value):
-        """Set countdown active state."""
-        self.game_state.countdown_active = value
-    
-    @show_continue_prompt.setter
-    def show_continue_prompt(self, value):
-        """Set show continue prompt state."""
-        self.game_state.show_continue_prompt = value
     
     def _create_game_objects(self) -> None:
         """Create and initialize all game objects."""
@@ -335,19 +224,3 @@ class PongGame:
             self.clock.tick(config.window.fps)
         
         pygame.quit()
-
-
-# Legacy compatibility functions for existing tests
-def create_game_with_mock_display():
-    """Create game instance with mocked display for testing."""
-    from unittest.mock import patch
-    
-    with patch('pygame.display.set_mode'):
-        with patch('pygame.font.Font'):
-            return PongGame()
-
-
-# Main execution
-if __name__ == "__main__":
-    game = PongGame()
-    game.run()

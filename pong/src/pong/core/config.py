@@ -2,7 +2,6 @@
 Game Configuration Module
 
 Centralized configuration for all game constants and settings.
-Follows DRY principles by providing single source of truth for configuration.
 """
 
 from dataclasses import dataclass
@@ -42,7 +41,7 @@ class PaddleConfig:
     """Paddle configuration."""
     width: int = 10
     height: int = 60
-    speed: int = 10  # Increased from 7 to 10 for faster movement
+    y_amount: int = 10
     player_offset_x: int = 20  # Distance from left edge
     computer_offset_x: int = 30  # Distance from right edge
 
@@ -68,10 +67,10 @@ class BallConfig:
 @dataclass
 class AIConfig:
     """AI opponent configuration."""
-    error_chance: float = 0.15  # 15% chance of mistake
-    prediction_factor: int = 10  # How far AI predicts ball movement
-    movement_threshold: int = 5  # Minimum difference to trigger movement
-    mistake_distance: int = 100  # Distance to move away when making mistake
+    error_chance: float = 0.10  # 10% chance of mistake
+    prediction_factor: int = 20  # Increased prediction distance for better tracking
+    movement_threshold: int = 2  # Very responsive movement
+    mistake_distance: int = 30  # Smaller mistake distance so mistakes are less severe
 
 
 @dataclass
@@ -90,17 +89,25 @@ class UIConfig:
     yes_button_offset: int = -120
     no_button_offset: int = 20
     
-    # Text positions - centered over game area
-    player_score_pos: Tuple[int, int] = None  # Will be calculated dynamically
-    computer_score_pos: Tuple[int, int] = None  # Will be calculated dynamically
-    high_score_pos: Tuple[int, int] = (1000 // 2 - 100, 30)  # Centered at top
+    # Text positions - will be calculated dynamically
+    player_score_pos: Tuple[int, int] = None
+    computer_score_pos: Tuple[int, int] = None
+    high_score_pos: Tuple[int, int] = (500, 30)
     level_pos: Tuple[int, int] = (50, 60)
-    losses_pos: Tuple[int, int] = (950, 60)
+    losses_pos: Tuple[int, int] = (800, 60)
     
-    def __post_init__(self):
-        """Calculate dynamic positions based on game area."""
-        # These will be calculated when we have access to game area config
-        pass
+    def calculate_positions(self, window_width: int, game_area_x: int, game_area_width: int):
+        """Calculate dynamic positions based on window and game area."""
+        # Update high score position to center of window
+        self.high_score_pos = (window_width // 2 - 100, 30)
+        
+        # Update losses position to be within window bounds
+        self.losses_pos = (window_width - 200, 60)
+        
+        # Calculate score positions over game area
+        self.player_score_pos = (game_area_x, 30)
+        computer_score_x = game_area_x + game_area_width - 200
+        self.computer_score_pos = (computer_score_x, 30)
 
 
 class Colors:
@@ -137,23 +144,11 @@ class GameConfig:
         self.colors = Colors()
         
         # Calculate dynamic UI positions
-        self._calculate_ui_positions()
-    
-    def _calculate_ui_positions(self):
-        """Calculate UI positions based on game area."""
-        # Player score - left aligned over game area
-        self.ui.player_score_pos = (self.game_area.x, 30)
-        
-        # Computer score - right aligned over game area
-        computer_score_x = self.game_area.x + self.game_area.width - 200
-        self.ui.computer_score_pos = (computer_score_x, 30)
-        
-        # High score - centered at top
-        self.ui.high_score_pos = (self.window.width // 2 - 100, 30)
-        
-        # Level and losses - positioned within window bounds
-        self.ui.level_pos = (50, 60)
-        self.ui.losses_pos = (self.window.width - 200, 60)  # Adjusted for 1000px width
+        self.ui.calculate_positions(
+            self.window.width, 
+            self.game_area.x, 
+            self.game_area.width
+        )
     
     @property
     def player_paddle_x(self) -> int:
