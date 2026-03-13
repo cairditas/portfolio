@@ -66,7 +66,11 @@ class AIController:
             Movement amount (positive for down, negative for up)
         """
         diff = target_y - current_y
-        return min(speed, abs(diff)) * (1 if diff > 0 else -1)
+        # If close to target, move the exact distance needed
+        if abs(diff) <= speed:
+            return diff
+        # Otherwise, move at full speed
+        return speed * (1 if diff > 0 else -1)
     
     def should_make_mistake(self) -> bool:
         """

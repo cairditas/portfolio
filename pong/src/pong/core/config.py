@@ -41,7 +41,7 @@ class PaddleConfig:
     """Paddle configuration."""
     width: int = 10
     height: int = 60
-    y_amount: int = 10
+    y_amount: int = 8  # Reduced to match ball speed (8 pixels/frame)
     player_offset_x: int = 20  # Distance from left edge
     computer_offset_x: int = 30  # Distance from right edge
 
@@ -67,10 +67,10 @@ class BallConfig:
 @dataclass
 class AIConfig:
     """AI opponent configuration."""
-    error_chance: float = 0.10  # 10% chance of mistake
-    prediction_factor: int = 20  # Increased prediction distance for better tracking
-    movement_threshold: int = 2  # Very responsive movement
-    mistake_distance: int = 30  # Smaller mistake distance so mistakes are less severe
+    error_chance: float = 0.02  # 2% chance of mistake (very rare)
+    prediction_factor: int = 5  # Reduced for more accurate tracking
+    movement_threshold: int = 1  # More responsive movement
+    mistake_distance: int = 20  # Smaller mistakes when they occur
 
 
 @dataclass

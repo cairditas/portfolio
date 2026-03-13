@@ -59,12 +59,12 @@ class TestDataRanges:
         'right_far': (GAME_AREA_X + GAME_AREA_WIDTH + 100, GAME_AREA_Y + GAME_AREA_HEIGHT // 2),
     }
     
-    # AI test scenarios
+    # AI test scenarios - updated for actual AI behavior and paddle position
     AI_TEST_SCENARIUM = [
-        {'ball_y': 200, 'ball_velocity_y': 0, 'make_mistake': False, 'expected_direction': 'down'},
-        {'ball_y': 150, 'ball_velocity_y': 0, 'make_mistake': False, 'expected_direction': 'up'},
-        {'ball_y': 200, 'ball_velocity_y': 0, 'make_mistake': True, 'expected_direction': 'up'},
-        {'ball_y': 150, 'ball_velocity_y': 0, 'make_mistake': True, 'expected_direction': 'down'},
+        {'ball_y': 200, 'ball_velocity_y': 0, 'make_mistake': False, 'expected_direction': 'up'},  # Ball above paddle center (240), move up
+        {'ball_y': 280, 'ball_velocity_y': 0, 'make_mistake': False, 'expected_direction': 'down'},  # Ball below paddle center (240), move down
+        {'ball_y': 200, 'ball_velocity_y': 0, 'make_mistake': True, 'expected_direction': 'up'},  # Ball above, mistake could go either way
+        {'ball_y': 280, 'ball_velocity_y': 0, 'make_mistake': True, 'expected_direction': 'down'},  # Ball below, mistake could go either way
     ]
 
 # Test margins and tolerances

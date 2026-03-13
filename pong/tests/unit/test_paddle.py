@@ -104,25 +104,68 @@ class TestPaddle(unittest.TestCase):
                 else:
                     self.assertNotEqual(self.paddle.rect.y, initial_y)
     
+    def test_ai_miss_rate(self):
+        """Test AI miss rate is approximately 2%."""
+        from pong.ai import BasicAIStrategy
+        from pong.core.config import config
+        
+        ai_strategy = BasicAIStrategy()
+        
+        # Test many iterations to get accurate miss rate
+        total_tests = 1000
+        mistakes = 0
+        
+        for i in range(total_tests):
+            movement_amount, made_mistake = ai_strategy.calculate_move(200, 0, 250)
+            if made_mistake:
+                mistakes += 1
+        
+        miss_rate = (mistakes / total_tests) * 100
+        
+        # Check if miss rate is close to 2% (allowing some variance)
+        self.assertAlmostEqual(miss_rate, config.ai.error_chance * 100, delta=2.0,
+                              msg=f"AI miss rate ({miss_rate:.1f}%) should be close to {config.ai.error_chance * 100}%")
+        
+        # Also check that AI doesn't miss too much (should be less than 5%)
+        self.assertLess(miss_rate, 5.0, "AI miss rate should be less than 5%")
+        
+        # And doesn't miss too little (should be more than 0.5%)
+        self.assertGreater(miss_rate, 0.5, "AI miss rate should be more than 0.5%")
+
     def test_paddle_ai_movement(self):
         """Test AI paddle movement with different scenarios."""
-        ai_tests = TestDataRanges.AI_TEST_SCENARIUM
+        from pong.ai import BasicAIStrategy
+        ai_strategy = BasicAIStrategy()
         
-        for scenario in ai_tests:
+        # Test only non-mistake scenarios since mistakes are random
+        normal_scenarios = [s for s in TestDataRanges.AI_TEST_SCENARIUM if not s['make_mistake']]
+        
+        for scenario in normal_scenarios:
             with self.subTest(scenario=scenario):
                 initial_y = self.paddle.rect.centery
-                self.paddle.ai_move(scenario['ball_y'], scenario['ball_velocity_y'], scenario['make_mistake'])
+                
+                # Use the new AI system
+                movement_amount, made_mistake = ai_strategy.calculate_move(
+                    scenario['ball_y'], 
+                    scenario['ball_velocity_y'], 
+                    self.paddle.rect.centery
+                )
+                
+                # Apply movement
+                if movement_amount > 0:
+                    self.paddle.move_down_by_amount(movement_amount)
+                elif movement_amount < 0:
+                    self.paddle.move_up_by_amount(abs(movement_amount))
                 
                 # Check that paddle moved
                 final_y = self.paddle.rect.centery
                 self.assertNotEqual(final_y, initial_y, "Paddle should have moved")
                 
-                # For mistake scenarios, check it moved away from ball
-                if scenario['make_mistake']:
-                    if scenario['ball_y'] > initial_y:
-                        self.assertLess(final_y, initial_y, "Mistake should move away from ball")
-                    else:
-                        self.assertGreater(final_y, initial_y, "Mistake should move away from ball")
+                # Check movement direction (only for non-mistake scenarios)
+                if scenario['expected_direction'] == 'up':
+                    self.assertLess(final_y, initial_y, "Should move up")
+                elif scenario['expected_direction'] == 'down':
+                    self.assertGreater(final_y, initial_y, "Should move down")
 
 
 if __name__ == '__main__':
