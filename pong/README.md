@@ -1,240 +1,94 @@
-# Pong
+# Pong Game
 
-A classic Pong game implemented in Gleam that compiles to JavaScript and runs in the browser. This implementation features player vs AI gameplay with smooth animations and responsive controls.
+A classic Pong game implementation using Python, Pygame, and Pygbag for browser deployment.
 
-## Game Description
+## Features
 
-Pong is a two-dimensional sports game that simulates table tennis. The player controls a paddle on the left side of the screen and competes against an AI-controlled paddle on the right. The objective is to hit a ball back and forth, scoring points when the opponent fails to return the ball.
+- **Classic Gameplay**: Player vs Computer Pong match
+- **Scoring System**: Track player score, computer score, and high score
+- **Level Progression**: Ball speed increases with each level
+- **Smart AI**: Computer opponent with occasional mistakes for balanced gameplay
+- **Game Over System**: Game ends after 5 losses with option to continue
+- **Visual Design**: Clear game border and dashed center line
+- **Browser Compatible**: Runs in web browser using Pygbag
 
-### Features
-- **Player vs AI**: Compete against an intelligent AI opponent
-- **Smooth Gameplay**: 60 FPS rendering with fluid animations
-- **Responsive Controls**: Real-time paddle movement using keyboard input
-- **Score Tracking**: Automatic score keeping for both player and AI
-- **Modern Web Technology**: Built with Gleam and compiled to JavaScript
+## Installation
 
-### Controls
-- **Up Arrow**: Move paddle up
-- **Down Arrow**: Move paddle down
-- **Space**: Pause/resume game (if implemented)
-
-## Running Locally
-
-### Prerequisites
-- Gleam compiler (install from https://gleam.run/)
-- Node.js (for JavaScript compilation and testing)
-- npm (for JavaScript dependencies)
-
-### Setup and Run
-
-1. **Clone and navigate to the project**:
-   ```sh
-   cd pong
+1. Clone or download this project
+2. Navigate to the project directory
+3. Create and activate virtual environment:
+   ```bash
+   python3.11 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
    ```
 
-2. **Install dependencies**:
-   ```sh
-   # Install Gleam dependencies
-   gleam deps download
-   
-   # Install Node.js dependencies
-   npm install
-   ```
+## Running the Game
 
-3. **Build the project**:
-   ```node
-   npm run build
-   ```
-
-4. **Open in browser**:
-   Open `index.html` in your web browser to play the game.
-
-   Alternatively, you can serve the files locally:
-   ```sh
-   # Using Python (if available)
-   python -m http.server 8000
-   
-   # Using Node.js serve (if available)
-   npx serve .
-   
-   # Then open http://localhost:8000 in your browser
-   ```
-
-### Development Mode
-
-For development with hot reloading:
-```sh
-gleam run   # Run the project
+### Local Development
+```bash
+python src/main.py
 ```
 
-## Test Coverage and Quality Analysis
-
-This project includes comprehensive test coverage and SonarQube integration for code quality analysis.
-
-### Coverage Requirements
-- **Lines**: ≥90%
-- **Functions**: ≥90%
-- **Branches**: ≥80%
-- **Statements**: ≥90%
-
-### Running Tests Locally
-
-#### Gleam Tests
-```sh
-gleam test
+### Web Deployment
+```bash
+pygbag build
 ```
+Then serve the `build/web` directory with your preferred web server.
 
-#### Gleam Tests with JavaScript Coverage
-```sh
-# Run Gleam tests (JavaScript target)
-npm test
+## Controls
 
-# Run tests with coverage report
-npm run test:coverage
+- **Up Arrow / W**: Move paddle up
+- **Down Arrow / S**: Move paddle down
+- **Mouse**: Click YES/NO buttons when prompted
 
-# Build for JavaScript
-npm run build
-```
+## Game Rules
 
-#### Coverage Reports
-Coverage reports are generated in multiple formats:
-- **Console**: Text summary in terminal
-- **HTML**: Detailed interactive report at `coverage/lcov-report/index.html`
-- **LCOV**: For CI/CD integration at `coverage/lcov.info`
-- **SonarQube**: For SonarQube analysis
-
-### Test Structure
-
-#### Gleam Tests (74 tests)
-- `test/pong/ball_test.gleam` - Ball physics and collision detection
-- `test/pong/paddle_test.gleam` - Paddle movement and mechanics
-- `test/pong/game_test.gleam` - Game logic and state management
-- `test/pong/input_test.gleam` - Input handling and keyboard events
-- `test/pong/render_test.gleam` - Canvas rendering functions
-- `test/pong/game_integration_test.gleam` - End-to-end gameplay scenarios
-
-#### Generated JavaScript Tests
-Gleam automatically compiles tests to JavaScript in `build/dev/javascript/pong/`:
-- `pong_test.mjs` - Main test runner
-- `ball_test.mjs` - Ball physics tests
-- `paddle_test.mjs` - Paddle mechanics tests
-- `game_test.mjs` - Game logic tests
-- `input_test.mjs` - Input handling tests
-- `render_test.mjs` - Rendering tests
-- `game_integration_test.mjs` - Integration tests
-
-### SonarQube Integration
-
-#### CI/CD Pipeline
-The project includes automated SonarQube analysis via GitHub Actions:
-
-- **Trigger**: Push to main/master branches and pull requests
-- **Analysis**: JavaScript coverage and code quality metrics
-- **Quality Gates**: Enforces coverage thresholds
-- **PR Comments**: Automatic coverage summary on pull requests
-
-#### Required Secrets
-To enable SonarQube analysis, configure these repository secrets:
-- `SONAR_TOKEN`: SonarQube authentication token
-- `SONAR_HOST_URL`: SonarQube server URL (optional for SonarCloud)
-- `SONAR_ORGANIZATION`: SonarQube organization (optional for SonarCloud)
-
-#### Local SonarQube Analysis
-```sh
-# Run local SonarQube analysis
-npm run sonar:local
-```
-
-### Coverage Configuration
-
-#### Gleam JavaScript Coverage
-Coverage is collected from Gleam-generated JavaScript files:
-- Collects coverage from `build/dev/javascript/**/*.mjs`
-- Excludes build artifacts and dependencies
-- Generates multiple report formats via c8
-
-#### c8 Configuration
-Coverage thresholds are enforced by c8:
-- Lines: 90%
-- Branches: 80%
-- Functions: 90%
-- Statements: 90%
-
-#### SonarQube Configuration
-Project analysis is configured in `sonar-project.properties`:
-- Maps coverage reports to source files
-- Excludes generated code and dependencies
-- Sets quality gate thresholds
-
-## Running Tests
-
-The project includes comprehensive unit tests for all game components:
-
-### Run All Tests
-```sh
-gleam test
-```
-
-### Test Coverage
-Tests are organized by component:
-- **Ball physics**: Movement, collision detection, and boundary checks
-- **Paddle mechanics**: Movement, positioning, and collision logic
-- **Game state**: Score tracking, game over conditions, and state transitions
-- **Input handling**: Keyboard input processing and paddle control
-- **Rendering**: Canvas drawing and visual updates
-- **Integration tests**: End-to-end gameplay scenarios
-
-### Individual Test Files
-- `test/pong/ball_test.gleam` - Ball movement and collision tests
-- `test/pong/paddle_test.gleam` - Paddle behavior tests
-- `test/pong/game_test.gleam` - Game logic and state management
-- `test/pong/input_test.gleam` - Input handling tests
-- `test/pong/render_test.gleam` - Rendering function tests
-- `test/pong/game_integration_test.gleam` - Full gameplay integration tests
+1. Use your paddle (blue) to hit the ball back to the computer (red)
+2. Score points when the ball passes the computer's paddle
+3. Each score increases the level and ball speed
+4. Game ends after 5 losses (ball passes your paddle)
+5. Choose to continue or start a new game after game over
 
 ## Project Structure
 
 ```
 pong/
-├── src/pong/           # Source code
-│   ├── pong.gleam      # Main entry point
-│   ├── game.gleam      # Game logic and state
-│   ├── ball.gleam      # Ball physics
-│   ├── paddle.gleam    # Paddle mechanics
-│   ├── input.gleam     # Input handling
-│   └── render.gleam    # Canvas rendering
-├── test/pong/          # Test files
-├── dist/               # Compiled JavaScript
-├── index.html          # Game HTML page
-├── canvas_ffi.mjs      # Canvas JavaScript bindings
-└── gleam.toml          # Project configuration
+├── src/
+│   ├── pong/
+│   │   ├── __init__.py
+│   │   └── game.py          # Main game logic
+│   └── main.py              # Entry point
+├── assets/                  # Game assets (empty for now)
+├── tests/                   # Test files (empty for now)
+├── venv/                    # Virtual environment
+├── index.html               # Web page template
+├── pygbag.toml             # Pygbag configuration
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
 ```
 
-## Technology Stack
+## Configuration
 
-- **Gleam**: Type-safe functional programming language
-- **JavaScript**: Compilation target for web deployment
-- **HTML5 Canvas**: Game rendering and graphics
-- **Gleeunit**: Testing framework for Gleam
-- **c8**: JavaScript coverage tool
-- **SonarQube**: Code quality analysis platform
+The game can be configured by modifying constants in `src/pong/game.py`:
 
-## Contributing
+- `WINDOW_WIDTH`, `WINDOW_HEIGHT`: Overall window size
+- `GAME_AREA_WIDTH`, `GAME_AREA_HEIGHT`: Game playing area size
+- `PADDLE_SPEED`: Paddle movement speed
+- `INITIAL_BALL_SPEED`: Starting ball speed
+- `SPEED_INCREMENT`: Speed increase per level
+- `MAX_LOSSES`: Number of losses before game over
+- `COMPUTER_ERROR_CHANCE`: Probability of computer making a mistake
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run all tests to ensure quality:
-   ```sh
-   gleam test          # Run Gleam tests
-   npm run test:coverage  # Run JavaScript tests with coverage
-   ```
-6. Ensure coverage thresholds are met (≥90% lines, ≥80% branches)
-7. Submit a pull request
+## Technologies Used
 
-### Quality Standards
-- All new code must have test coverage
-- Coverage thresholds must be maintained
-- Code must pass SonarQube quality gates
-- Follow existing code style and patterns
+- **Python 3.11**: Programming language
+- **Pygame**: Game development library
+- **Pygbag**: Python to WebAssembly compiler for browser deployment
+
+## License
+
+MIT License

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gleam Pong</title>
+    <title>Pong Game</title>
     <style>
         body {
             margin: 0;
@@ -13,16 +13,26 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            font-family: monospace;
+            font-family: Arial, sans-serif;
         }
-        canvas {
+        #canvas {
             border: 2px solid #fff;
             background-color: #000;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="1200" height="800"></canvas>
-    <script src="dist/pong.js"></script>
+    <div class="controls">
+        <p>Controls: Arrow Keys or W/S to move paddle</p>
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script src="build/web/pong.js"></script>
 </body>
 </html>

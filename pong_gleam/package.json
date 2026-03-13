@@ -4,12 +4,12 @@
   "description": "Gleam Pong game with JavaScript testing and SonarQube integration",
   "type": "module",
   "scripts": {
-    "build": "gleam build --target javascript && cp canvas_ffi.mjs build/dev/javascript/pong/",
+    "build": "gleam build --target javascript && mkdir -p dist && cp -r build/dev/javascript/* dist/ && cp canvas_ffi.mjs dist/ && find dist -name '*_test*.mjs' -delete && mv dist/pong/pong/pong.mjs dist/pong.js",
     "test": "npm run build && gleam test --target javascript",
     "test:ffi": "npm run build && node --test test/canvas_ffi.test.mjs",
     "test:coverage": "npm run build && c8 --reporter=text --reporter=json-summary sh -c 'gleam test --target javascript && node --test test/canvas_ffi.test.mjs'",
     "sonar:local": "sonar-scanner",
-    "clean": "rm -rf build coverage .sonar"
+    "clean": "rm -rf build coverage .sonar dist"
   },
   "devDependencies": {
     "c8": "^8.0.1",

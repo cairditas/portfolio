@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gleam Pong</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: monospace;
+        }
+        canvas {
+            border: 2px solid #fff;
+            background-color: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="1200" height="900"></canvas>
+    <script type="module">
+    import { init_game, update_game, check_game_over } from "./dist/pong/pong/game.mjs";
+    import { clear_canvas, draw_ball, draw_paddle, draw_score, draw_game_over } from "./dist/pong/pong/render.mjs";
+    import { init_input, handle_key_down, handle_key_up, get_player_direction } from "./dist/pong/pong/input.mjs";
+
+    let game = init_game();
+    let inputState = init_input();
+    let canvas = document.getElementById('gameCanvas');
+    let ctx = canvas.getContext('2d');
+
+    // Handle keyboard input
+    document.addEventListener('keydown', (e) => {
+        inputState = handle_key_down(inputState, e.key);
+        if (e.key === ' ' && game.state === 'GameOver') {
+            game = init_game();
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        inputState = handle_key_up(inputState, e.key);
+    });
+
+    function gameLoop() {
+        // Update game state
+        game = update_game(game, inputState, canvas.width, canvas.height);
+        game = check_game_over(game);
+        
+        // Clear canvas
+        clear_canvas(ctx, canvas.width, canvas.height);
+        
+        // Draw game elements
+        draw_ball(ctx, game.ball);
+        draw_paddle(ctx, game.player_paddle);
+        draw_paddle(ctx, game.ai_paddle);
+        draw_score(ctx, game.player_score, game.ai_score);
+        
+        // Draw game over screen if needed
+        if (game.state === 'GameOver') {
+            draw_game_over(ctx, game.player_score, game.ai_score);
+        }
+        
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Start the game
+    gameLoop();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+[project]
+name = "pong"
+version = "1.0.0"
+description = "Classic Pong Game using Pygame and Pygbag"
+authors = ["Pong Game Developer"]
+license = "MIT"
+
+[build]
+target = "web"
+template = "pygame"
+
+[pygame]
+display_width = 800
+display_height = 600
+fps = 60
+
+[web]
+canvas_id = "canvas"
+background_color = "#000000"
